@@ -1,4 +1,11 @@
+import jwt from 'jwt-simple';
 import User from '../models/user';
+import config from '../config';
+
+function tokenForUser(user) {
+	const timestamp = new Date().getTime();
+	return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
+}
 
 export default function(req, res, next) {
 	const email = req.body.email;
@@ -28,6 +35,6 @@ export default function(req, res, next) {
 		});
 
 		// Let the user know that the creation was successful
-		res.send({ message: 'User has been created' });
+		res.send({ token: tokenForUser(user) });
 	});	
 }
